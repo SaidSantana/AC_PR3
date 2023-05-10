@@ -22,7 +22,8 @@ module Control
 	output Mem_Write_o,
 	output ALU_Src_o,
 	output Reg_Write_o,
-	output [2:0]ALU_Op_o
+	output [2:0]ALU_Op_o,
+	output AUIPC_o
 );
 
 //OPCODES PARA INSTRUCCIONES
@@ -42,32 +43,38 @@ localparam J_Type = 7'b1101111;
 
 localparam I_Type_JALR = 7'b1100111;
 
+localparam U_Type_AUIPC = 7'b0010111;
 
 
-reg [10:0] control_values;
+
+reg [11:0] control_values;
 
 always@(OP_i) begin
 	case(OP_i)//                          10_9_87_6_54_3_210
 		R_Type: 
-			control_values= 11'b0_0_00_1_00_0_000;
+			control_values= 12'b00_0_00_1_00_0_000;
 		I_Type_Logic: 
-			control_values= 11'b0_0_00_1_00_1_001; //Últimos 3 bits se puede asignar lo que queramos
+			control_values= 12'b00_0_00_1_00_1_001; //Últimos 3 bits se puede asignar lo que queramos
 		U_Type:
-			control_values= 11'b0_0_00_1_00_1_010;
+			control_values= 12'b0_0_00_1_00_1_010;
 		S_Type:
-			control_values= 11'b0_0_00_0_01_1_011; //3 ALU_op para tipo S
+			control_values= 12'b00_0_00_0_01_1_011; //3 ALU_op para tipo S
 		I_Type_Load:
-			control_values= 11'b0_0_01_1_10_1_100;
+			control_values= 12'b00_0_01_1_10_1_100;
 		B_Type: 
-			control_values= 11'b0_1_00_0_00_0_101; //5 ALU_op para tipo B
+			control_values= 12'b00_1_00_0_00_0_101; //5 ALU_op para tipo B
 		J_Type:
-			control_values= 11'b0_1_10_1_00_0_110; //6 ALU_op par tipo J
+			control_values= 12'b00_1_10_1_00_0_110; //6 ALU_op par tipo J
 		I_Type_JALR:
-			control_values= 11'b1_1_10_1_10_1_111; //7 para JALR
+			control_values= 12'b01_1_10_1_10_1_111; //7 para JALR
+		U_Type_AUIPC:
+			control_values= 12'b10_0_00_1_00_1_011;
 		default:
-			control_values= 11'b0_00_0_00_0_000;
+			control_values= 12'b00_00_0_00_0_000;
 		endcase
 end	
+
+assign AUIPC_o = control_values[11];
 
 assign Jalr_o = control_values[10];
 

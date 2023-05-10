@@ -43,6 +43,8 @@ localparam BEQ = 4'b10_00; //8 para BEQ
 
 localparam BNE = 4'b10_01; //9 para BNE
 
+localparam AUIPC = 4'b11_11; //AUIPC
+
 //localparam JAL = 4'b10_10; //10 para JAL
 
 
@@ -69,6 +71,8 @@ localparam BNE = 4'b10_01; //9 para BNE
 			ALU_Result_o = B_i - A_i;
 		BNE:
 			ALU_Result_o = (A_i == B_i);
+		AUIPC:
+			ALU_Result_o = A_i + (B_i << 12);
 		//JAL:
 			//ALU_Result_o = 0;
 		default:

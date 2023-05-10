@@ -21,6 +21,7 @@ module ID_EX_module
 	input mem_write_i, //mem_write_w
 	input [2:0] alu_op_i, //alu_op_w
 	input alu_src_op_i, //alu_src_op_w
+	input auipc_control_i,
 
 	
 	output reg [31:0] ID_EX_pc_4_o,
@@ -40,7 +41,8 @@ module ID_EX_module
 	output reg ID_EX_mem_read_o, 
 	output reg ID_EX_mem_write_o,
 	output reg [2:0] ID_EX_alu_op_o, 
-	output reg ID_EX_alu_src_op_o
+	output reg ID_EX_alu_src_op_o,
+	output reg ID_EX_auipc_o
 );
 
 always@(negedge reset or posedge clk) begin

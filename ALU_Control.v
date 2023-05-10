@@ -61,6 +61,8 @@ localparam J_Type_JAL = 7'bx_110_xxx;
 
 localparam I_Type_JALR = 7'bx_111_000;
 
+localparam U_Type_AUIPC = 7'bx_011_xxx;
+
 reg [3:0] alu_control_values;
 wire [6:0] selector;
 
@@ -102,6 +104,8 @@ always@(selector)begin
 			alu_control_values = 4'b10_10; // 10
 		I_Type_JALR:
 			alu_control_values = 4'b00_00; // 11 Un add
+		U_Type_AUIPC:
+			alu_control_values = 4'b11_11;
 
 		default: alu_control_values = 4'b00_00;
 	endcase

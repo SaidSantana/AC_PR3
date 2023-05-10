@@ -48,6 +48,7 @@ wire [1:0]mem_to_reg_w; //Cambiando a 2 bits para selector
 wire mem_write_w;
 wire mem_read_w;
 wire [2:0] alu_op_w;
+wire auipc_control_w;
 
 /** Program Counter**/
 wire [31:0] pc_plus_4_w;
@@ -119,6 +120,7 @@ wire ID_EX_mem_read_o_w;
 wire ID_EX_mem_write_o_w; 
 wire [2:0] ID_EX_alu_op_o_w; 
 wire ID_EX_alu_src_op_o_w;
+wire ID_EX_auipc_o_w;
 
 /**New wires for the EX/MEM module**/
 wire [31:0] EX_MEM_pc_4_o_w;
@@ -143,6 +145,9 @@ wire [4:0] MEM_WB_write_register_o_w;
 wire MEM_WB_reg_write_o_w;
 wire [1:0] MEM_WB_mem_to_reg_o_w;
 
+/**Mux AUIPC output wire**/
+wire [31:0] auipc_mux_o_w;
+
 //******************************************************************/
 //******************************************************************/
 //******************************************************************/
@@ -162,7 +167,8 @@ CONTROL_UNIT
 	.Reg_Write_o(reg_write_w),
 	.Mem_to_Reg_o(mem_to_reg_w),
 	.Mem_Read_o(mem_read_w),
-	.Mem_Write_o(mem_write_w)
+	.Mem_Write_o(mem_write_w),
+	.AUIPC_o(auipc_control_w)
 );
 
 
@@ -281,7 +287,7 @@ ALU
 ALU_UNIT
 (
 	.ALU_Operation_i(alu_operation_w),
-	.A_i(ID_EX_read_1_o_w),
+	.A_i(auipc_mux_o_w),
 	.B_i(read_data_2_or_imm_w),
 	.ALU_Result_o(alu_result_w),
 	.Zero_o(zero_w)
@@ -388,16 +394,21 @@ MUX_PC4_OR_PCIMMEDIATE
 	
 	.Mux_Output_o(pc4_or_primmediate_w)
 );
-/*MUX_PC4_OR_PCIMMEDIATE
+
+Multiplexer_2_to_1
+#(
+	.NBits(32)
+)
+MUX_AUIPC
 (
-	.Selector_i(branch_w),
-	.Mux_Data_0_i(pc_plus_4_w),
-	.Mux_Data_1_i(pc_plus_immediate_w),
+	.Selector_i(ID_EX_auipc_o_w),
+	.Mux_Data_0_i(ID_EX_read_1_o_w),
+	.Mux_Data_1_i(IF_ID_pc_o_w),
 	
 	
 	
-	.Mux_Output_o(pc4_or_primmediate_w)
-);*/
+	.Mux_Output_o(auipc_mux_o_w)
+);
 
 //New module for First Pipe IF/ID 
 IF_ID_module
@@ -435,11 +446,12 @@ ID_EX_NEW_MODULE
 	.inst_30_i(IF_ID_inst_bus_o_w[30]),
 	.inst_14_to_12_i(IF_ID_inst_bus_o_w[14:12]),
 	.inst_11_to_7_i(IF_ID_inst_bus_o_w[11:7]),
+	.auipc_control_i(auipc_control_w),
 	
 	.reg_write_i(reg_write_w),
 	.mem_to_reg_i(mem_to_reg_w),
 	.jalr_i(jalr_w),
-	.branch_i(branch_w),
+	.branch_i(branch_control_w),
 	.mem_read_i(mem_read_w),
 	.mem_write_i(mem_write_w),
 	.alu_op_i(alu_op_w),
@@ -464,7 +476,8 @@ ID_EX_NEW_MODULE
 	
 	.ID_EX_funct3(ID_EX_funct3_w),
 	.ID_EX_write_register_o(ID_EX_write_register_w), //*
-	.ID_EX_funct7(ID_EX_funct7_w)
+	.ID_EX_funct7(ID_EX_funct7_w),
+	.ID_EX_auipc_o(ID_EX_auipc_o_w)
 );
 
 //New module for Third Pipe EX/MEM 
