@@ -1,4 +1,4 @@
-/******************************************************************
+	/******************************************************************
 * Description
 *	This is the top-level of a RISC-V Microprocessor that can execute the next set of instructions:
 *		add
@@ -101,15 +101,15 @@ wire [31:0] IF_ID_pc_o_w;
 wire [31:0] IF_ID_inst_bus_o_w;
 
 /**New wires for the ID/EX module**/
-wire [31:0] ID_EX_pc_4_o_w;
-wire [31:0] ID_EX_pc_o_w;
-wire [31:0] ID_EX_read_1_o_w;
-wire [31:0] ID_EX_read_2_o_w;
-wire [31:0] ID_EX_immediate_o_w;
-
 wire [4:0] ID_EX_write_register_w;
 wire ID_EX_funct7_w;
 wire [2:0] ID_EX_funct3_w;
+
+wire [31:0] ID_EX_pc_4_o_w;
+wire [31:0] ID_EX_pc_o_w;
+wire [4:0] ID_EX_read_1_o_w;
+wire [4:0] ID_EX_read_2_o_w;
+wire [31:0] ID_EX_immediate_o_w;
 
 wire ID_EX_reg_write_o_w; 
 wire [1:0] ID_EX_mem_to_reg_o_w; 
@@ -142,6 +142,16 @@ wire [31:0] MEM_WB_read_data_o_w;
 wire [4:0] MEM_WB_write_register_o_w;
 wire MEM_WB_reg_write_o_w;
 wire [1:0] MEM_WB_mem_to_reg_o_w;
+
+/**New wires for the Forwarding Unit module**/
+wire [1:0] ForwardA_o_w;
+wire [1:0] ForwardB_o_w;
+
+/**Multiplexer 3 to 1 Forward A**/
+wire [31:0] ForwardA_data_o_w;
+
+/**Multiplexer 3 to 1 Forward B**/
+wire [31:0] ForwardB_data_o_w;
 
 //******************************************************************/
 //******************************************************************/
@@ -243,7 +253,7 @@ Multiplexer_2_to_1
 MUX_DATA_OR_IMM_FOR_ALU
 (
 	.Selector_i(ID_EX_alu_src_op_o_w),
-	.Mux_Data_0_i(ID_EX_read_2_o_w),
+	.Mux_Data_0_i(ForwardB_data_o_w),
 	.Mux_Data_1_i(ID_EX_immediate_o_w),
 	
 	.Mux_Output_o(read_data_2_or_imm_w)
@@ -281,7 +291,7 @@ ALU
 ALU_UNIT
 (
 	.ALU_Operation_i(alu_operation_w),
-	.A_i(ID_EX_read_1_o_w),
+	.A_i(ForwardA_data_o_w),
 	.B_i(read_data_2_or_imm_w),
 	.ALU_Result_o(alu_result_w),
 	.Zero_o(zero_w)
@@ -539,6 +549,48 @@ MEM_WB_NEW_MODULE
 	//Control signal outputs
 	.MEM_WB_reg_write_o(MEM_WB_reg_write_o_w),
 	.MEM_WB_mem_to_reg_o(MEM_WB_mem_to_reg_o_w)
+);
+
+
+Forwarding_Unit
+FORWARDING_UNIT_NEW_MODULE
+(
+	.EX_MEM_write_register_i(EX_MEM_write_register_o_w),
+	.MEM_WB_write_register_i(MEM_WB_write_register_o_w),
+	.ID_EX_read_register_1_i(IF_ID_inst_bus_o_w[19:15]),
+	.ID_EX_read_register_2_i(IF_ID_inst_bus_o_w[24:20]),
+  
+	.ForwardA(ForwardA_o_w),
+	.ForwardB(ForwardB_o_w)
+);
+
+
+Multiplexer_3_to_1
+#(
+	.NBits(32)
+)
+MUX_FORWARD_A
+(
+	.Selector_i(ForwardA_o_w),
+	.Mux_Data_0_i(ID_EX_read_1_o_w),
+	.Mux_Data_1_i(read_address_or_aluResult),
+	.Mux_Data_2_i(EX_MEM_alu_result_o_w),
+	
+	.Mux_Output_o(ForwardA_data_o_w)
+);
+
+Multiplexer_3_to_1
+#(
+	.NBits(32)
+)
+MUX_FORWARD_B
+(
+	.Selector_i(ForwardB_o_w),
+	.Mux_Data_0_i(ID_EX_read_2_o_w),
+	.Mux_Data_1_i(read_address_or_aluResult),
+	.Mux_Data_2_i(EX_MEM_alu_result_o_w),
+	
+	.Mux_Output_o(ForwardB_data_o_w)
 );
 
 assign output_A = alu_result_w;

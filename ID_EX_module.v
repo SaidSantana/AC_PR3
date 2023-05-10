@@ -25,8 +25,8 @@ module ID_EX_module
 	
 	output reg [31:0] ID_EX_pc_4_o,
 	output reg [31:0] ID_EX_pc_o,
-	output reg [31:0] ID_EX_read_1_o,
-	output reg [31:0] ID_EX_read_2_o,
+	output reg [4:0] ID_EX_read_1_o,
+	output reg [4:0] ID_EX_read_2_o,
 	output reg [31:0] ID_EX_immediate_o,
 	
 	output reg [2:0] ID_EX_funct3,
