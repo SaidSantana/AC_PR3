@@ -19,7 +19,7 @@ module ID_EX_module
 	input branch_i, //branch_w
 	input mem_read_i, //mem_read_w
 	input mem_write_i, //mem_write_w
-	input alu_op_i, //alu_op_w
+	input [2:0] alu_op_i, //alu_op_w
 	input alu_src_op_i, //alu_src_op_w
 
 	
@@ -39,7 +39,7 @@ module ID_EX_module
 	output reg ID_EX_branch_o, 
 	output reg ID_EX_mem_read_o, 
 	output reg ID_EX_mem_write_o,
-	output reg ID_EX_alu_op_o, 
+	output reg [2:0] ID_EX_alu_op_o, 
 	output reg ID_EX_alu_src_op_o
 );
 

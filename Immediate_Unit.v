@@ -35,7 +35,7 @@ always@(Instruction_bus_i) begin
 		I_Type:
 			Immediate_o = {{20{Instruction_bus_i[31]}},Instruction_bus_i[31:20]};// I format
 		U_Type:
-			Immediate_o = {{20{Instruction_bus_i[31:12]}}};// U format
+			Immediate_o = {{12{Instruction_bus_i[31]}},{Instruction_bus_i[31:12]}};// U format
 		S_Type:
 			Immediate_o = {Instruction_bus_i[31:25],Instruction_bus_i[11:7]}; // S format
 		I_Type_Load:

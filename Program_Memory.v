@@ -31,7 +31,7 @@ assign real_address = {2'b0, Address_i[16:2]};
 	
 	initial
 	begin
-		$readmemh("C:/Users/Nelson/OneDrive - ITESO/Documents/Nelson Vargas ITESO/Primavera 2023/Arquitectura Computacional/Practicas/Practica2/src/testPipe.dat", rom);
+		$readmemh("C:/Users/Nelson/OneDrive - ITESO/Documents/Nelson Vargas ITESO/Primavera 2023/Arquitectura Computacional/Practicas/Practica2/src/pipelineHanoiText.dat", rom);
 	end
 	
 

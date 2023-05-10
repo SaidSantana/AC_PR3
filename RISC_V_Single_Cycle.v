@@ -117,7 +117,7 @@ wire ID_EX_jalr_o_w;
 wire ID_EX_branch_o_w;
 wire ID_EX_mem_read_o_w; 
 wire ID_EX_mem_write_o_w; 
-wire ID_EX_alu_op_o_w; 
+wire [2:0] ID_EX_alu_op_o_w; 
 wire ID_EX_alu_src_op_o_w;
 
 /**New wires for the EX/MEM module**/
@@ -152,7 +152,7 @@ Control
 CONTROL_UNIT
 (
 	/****/
-	.OP_i(instruction_bus_w[6:0]),
+	.OP_i(IF_ID_inst_bus_o_w[6:0]),
 	/** outputs**/
 	.Jalr_o(jalr_w), //Signal for the JALR instruction
 	.Branch_o(branch_control_w),

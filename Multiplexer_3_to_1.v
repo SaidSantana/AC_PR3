@@ -18,7 +18,7 @@ module Multiplexer_3_to_1
 
 //localparam immediate_plus_4 = 10;
 
-	always@(Selector_i ,Mux_Data_1_i ,Mux_Data_0_i) begin
+	always@(Selector_i ,Mux_Data_1_i ,Mux_Data_0_i, Mux_Data_2_i) begin
 		case(Selector_i)
             00:
 			    Mux_Output_o = Mux_Data_0_i;
